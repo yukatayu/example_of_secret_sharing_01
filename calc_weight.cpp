@@ -28,7 +28,7 @@ int main(){
 	std::uniform_int_distribution<> dist(0, 307);
 
 	// secret
-	std::array<GF<307>, 3> s{95, 84, 72};
+	std::array<GF<307>, 3> s{62, 85, 57};
 
 	// make random (private) key
 	std::array<std::array<GF<307>, 2>, 3> key{};
