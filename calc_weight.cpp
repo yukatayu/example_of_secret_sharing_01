@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
+#include <random>
 
 template<class F>
 F lagrange_interpolation(std::vector<F> xs, std::vector<F> ys, F x_0){
@@ -22,12 +23,18 @@ F lagrange_interpolation(std::vector<F> xs, std::vector<F> ys, F x_0){
 }
 
 int main(){
+	std::random_device seed_gen;
+	std::mt19937 rand(seed_gen());
+	std::uniform_int_distribution<> dist(0, 307);
+
+	// secret
 	std::array<GF<307>, 3> s{95, 84, 72};
-	std::array<std::array<GF<307>, 2>, 3> key{
-		 17, 301,  // a
-		284, 172,  // b
-		165,  67   // c
-	};
+
+	// make random (private) key
+	std::array<std::array<GF<307>, 2>, 3> key{};
+	for(int from = 0; from < 3; ++from)
+		for(int coeff = 0; coeff < 2; ++coeff)
+			key[from][coeff] = GF<307>{dist(rand)};
 
 	std::cout << "A = " << s[0] << ", B = " << s[1] << ", C = " << s[2] << std::endl;
 	std::cout << "DEBUG: Sum{ A, B, C } = " << s[0]+s[1]+s[2] << std::endl;
@@ -44,7 +51,7 @@ int main(){
 				  key[from][0] * GF<307>{(to+1)*(to+1)}
 				+ key[from][1] * GF<307>{(to+1)}
 				+ s[from];
-			std::cout << "f_" << from << "(" << to + 1 << ") = " << share[from][to] << ", ";
+			std::cout << "f_" << char('A' + from) << "(" << to + 1 << ") = " << share[from][to] << ", ";
 		}
 		std::cout << std::endl;
 	}
@@ -67,7 +74,7 @@ int main(){
 
 	// matching
 	for(int i=0; i<3; ++i){
-		std::cout << "f_s(" << i+1 << ") = " << received_sum[i] << std::endl;
+		std::cout << "f_sum(" << i+1 << ") = " << received_sum[i] << std::endl;
 	}
 
 	std::cout << "----------" << std::endl;
@@ -79,7 +86,7 @@ int main(){
 			0
 		);
 
-	std::cout << "f_s(0) = " << calculated_s << std::endl;
+	std::cout << "f_sum(0) = " << calculated_s << std::endl;
 	std::cout << "average = " << int{calculated_s} / 3.0 << std::endl;
 
 	return 0;
