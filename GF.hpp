@@ -12,10 +12,10 @@ private:
 	}
 
 	constexpr static bool is_prime(int x){
-		if(q < 2)
+		if(x < 2)
 			return false;
-		for(int i=2; i*i <= q; ++i)
-			if(q % i == 0)
+		for(int i=2; i*i <= x; ++i)
+			if(x % i == 0)
 				return false;
 		return true;
 	}
@@ -33,8 +33,12 @@ private:
 	int val_{};
 
 public:
-	int val(){ return val_; }
-	operator int(){ return val_; }
+	int val() const { return val_; }
+	operator int() const { return val_; }
+
+	bool operator==(const GF<q>& rhs) const {
+		return val_ == rhs.val_;
+	}
 
 	GF(int val = 0) : val_(mod(val)) {
 		// check if q is prime
